@@ -1,0 +1,12 @@
+{% extends 'base.html'  %}
+{% block tittle %}
+Get List
+{% endblock%}
+{% block cont %}
+<form method="post">
+    {% csrf_token %}
+    <input type="button" name="fo" value="Click">
+
+</form>
+{% endblock%}
+
