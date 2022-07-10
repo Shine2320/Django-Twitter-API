@@ -1,6 +1,6 @@
 from django.urls import path
 
-from follow.views import home, purl, cur, durl, comp, csvs
+from follow.views import home, purl, cur, durl, comp, csvs,comptwo
 
 urlpatterns = [
     path('list/', home),
@@ -8,5 +8,6 @@ urlpatterns = [
     path('cur/',cur),
     path('durl/',durl),
     path('comp/',comp),
-    path('csv',csvs)
+    path('csv',csvs),
+    path('comp2/',comptwo),
 ]

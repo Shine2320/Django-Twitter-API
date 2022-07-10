@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from follow.models import Calend
+from follow.models import Calend,pipedrive
 from follow.views import home
 
-admin.site.register(Calend)
+admin.site.register(pipedrive)

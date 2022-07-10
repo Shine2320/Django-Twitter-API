@@ -14,7 +14,7 @@ from django.conf import settings
 
 from geopy import Nominatim
 
-from follow.models import Calend, Calendly, Streak, Leadfeeder, pipedrive, calpipelead
+from follow.models import Calend, Calendly, Streak, Leadfeeder, calpipe, pipedrive, calpipelead
 
 
 def home(request, null=None):
@@ -24,10 +24,10 @@ def home(request, null=None):
     access_secret = settings.ACCESS_TOKEN_SECRET
     auth = tweepy.OAuth1UserHandler(consumer_key, consumer_secret, access_token, access_secret)
     api = tweepy.API(auth, wait_on_rate_limit=True)
-    data = [x._json for x in tweepy.Cursor(api.get_followers, screen_name='Leadfeeder', count=200).items(4400)]
+    data = [x._json for x in tweepy.Cursor(api.get_followers, screen_name='Calendly', count=200).items(18200)]
     for x in data:
 
-        ma = Leadfeeder()
+        ma = Calendly()
         ma.Profile_id = x['id']
         ma.Name = x['name']
         ma.Username = x['screen_name']
@@ -107,7 +107,7 @@ def home(request, null=None):
 
 
 def purl(request):
-    puu = calpipelead.objects.values('Url_section_url', 'Profile_id')
+    puu = calpipe.objects.values('Url_section_url', 'Profile_id')
     puu = list(puu)
 
     # purl = puu[0]['Url_section_url']
@@ -117,10 +117,11 @@ def purl(request):
     for x in range(t):
         purl = puu[x]['Url_section_url']
         idu = puu[x]['Profile_id']
+        print(x)
         print(idu)
         print(purl)
         p = str(purl)
-        pu = calpipelead.objects.get(Profile_id=idu)
+        pu = calpipe.objects.get(Profile_id=idu)
         p = p.replace(",", "")
         p = p.replace("'", "")
         p = p.replace("(", "")
@@ -128,7 +129,7 @@ def purl(request):
         # p=p.replace(',','')
         try:
 
-            r = requests.get(p, allow_redirects=False, timeout=(10, 20))
+            r = requests.get(p, allow_redirects=False, timeout=(3, 3))
 
             try:
                 z = r.headers['location']
@@ -169,7 +170,7 @@ def purl(request):
 
 
 def cur(request):
-    puu = calpipelead.objects.values('Location', 'Profile_id')
+    puu = calpipe.objects.values('Location', 'Profile_id')
     puu = list(puu)
 
     # purl = puu[0]['Url_section_url']
@@ -178,9 +179,9 @@ def cur(request):
     for x in range(t):
         purl = puu[x]['Location']
         idu = puu[x]['Profile_id']
-
+        print(x)
         p = str(purl)
-        pu = calpipelead.objects.get(Profile_id=idu)
+        pu = calpipe.objects.get(Profile_id=idu)
         # p = p.replace(",", "")
         # p = p.replace("'", "")
         # p = p.replace("(", "")
@@ -191,7 +192,7 @@ def cur(request):
         try:
 
             geolocator = Nominatim(user_agent="geoapiExercises")
-            loc = geolocator.geocode(purl, timeout=20)
+            loc = geolocator.geocode(purl, timeout=10)
             print(loc)
             pu.Location = loc
         except TimeoutError:
@@ -208,7 +209,7 @@ def cur(request):
 
 
 def durl(request):
-    puu = calpipelead.objects.values('Description_section_url', 'Profile_id')
+    puu = calpipe.objects.values('Description_section_url', 'Profile_id')
     puz = list(puu)
     # p = pu['Description_section_url']
     # print(p)
@@ -216,12 +217,13 @@ def durl(request):
     print(t)
 
     for x in range(t):
+        print(x)
         try:
             z = []
             purl = puz[x]['Description_section_url']
             idu = puz[x]['Profile_id']
-            pu = calpipelead.objects.get(Profile_id=idu)
-
+            pu = calpipe.objects.get(Profile_id=idu)
+            print(idu)
             if purl is None:
                 print('no')
 
@@ -242,7 +244,7 @@ def durl(request):
                     k = (n[f])
                     try:
 
-                        r = requests.get(k, allow_redirects=False, timeout=(10, 20))
+                        r = requests.get(k, allow_redirects=False, timeout=(3, 3))
 
                         try:
                             z.append(r.headers['location'])
@@ -251,41 +253,57 @@ def durl(request):
                             pu.save()
 
                         except KeyError:
-                            pu.Description_section_url = n
+                            z.append(k)
+                            pu.Description_section_url = z
 
                             pu.save()
                     except requests.exceptions.ConnectionError:
-                        pu.Description_section_url = n
+                        z.append(k)
+                        pu.Description_section_url = z
                         pu.save()
                     except requests.exceptions.MissingSchema:
-                        pu.Description_section_url = n
+                        z.append(k)
+                        pu.Description_section_url = z
                         pu.save()
                     except requests.exceptions.ReadTimeout:
-                        pu.Description_section_url = n
+                        z.append(k)
+                        pu.Description_section_url = z
                         pu.save()
                     except urllib3.exceptions.ReadTimeoutError:
-                        pu.Description_section_url = n
+                        z.append(k)
+                        pu.Description_section_url = z
                         pu.save()
                     except TimeoutError:
-                        pu.Description_section_url = n
+                        z.append(k)
+                        pu.Description_section_url = z
                         pu.save()
                     except UnicodeDecodeError:
-                        pu.Description_section_url = n
+                        z.append(k)
+                        pu.Description_section_url = z
                         pu.save()
                     except requests.exceptions.ContentDecodingError:
-                        pu.Description_section_url = n
+                        z.append(k)
+                        pu.Description_section_url = z
                         pu.save()
                     except urllib3.exceptions.DecodeError:
-                        pu.Description_section_url = n
+                        z.append(k)
+                        pu.Description_section_url = z
                         pu.save()
                     except zlib.error:
-                        pu.Description_section_url = n
+                        z.append(k)
+                        pu.Description_section_url = z
                         pu.save()
                     except psycopg2.errors.StringDataRightTruncation:
-                        pu.Description_section_url = n
+                        z.append(k)
+                        pu.Description_section_url = z
                         pu.save()
                     except django.db.utils.DataError:
-                        pu.Description_section_url = n
+                        z.append(k)
+                        pu.Description_section_url = z
+                        pu.save()
+                    except requests.exceptions.InvalidSchema:
+                        z.append(k)
+                        pu.Description_section_url = z
                         pu.save()
 
         except TypeError:
@@ -296,7 +314,7 @@ def durl(request):
 def comp(request):
     pu = Calendly.objects.values('Profile_id')
     puu = list(pu)
-    jj = Leadfeeder.objects.values('Profile_id')
+    jj = Calendly.objects.values('Profile_id')
     zuu = list(jj)
     kk = pipedrive.objects.values('Profile_id')
     yuu = list(kk)
@@ -313,7 +331,7 @@ def comp(request):
                     if ab == ad:
                         print(ab)
                         mb = Calendly.objects.get(Profile_id=ab)
-                        ma = calpipelead()
+                        ma = calpipe()
                         ma.Profile_id = mb.Profile_id
                         ma.Name = mb.Name
                         ma.Username = mb.Username
@@ -359,10 +377,72 @@ def comp(request):
                         ma.Verified = mb.Verified
                         ma.save()
     return render(request, 'fol.html')
-
+def comptwo(request):
+    pu = Calendly.objects.values('Profile_id')
+    puu = list(pu)
+    jj = pipedrive.objects.values('Profile_id')
+    zuu = list(jj)
+    #kk = pipedrive.objects.values('Profile_id')
+    #yuu = list(kk)
+    t = (len(puu))
+    g = (len(zuu))
+    #o = (len(yuu))
+    for x in range(t):
+        ab = puu[x]['Profile_id']
+        for y in range(g):
+            ac = zuu[y]['Profile_id']
+            if ab == ac:                
+                print(ab)
+                mb = Calendly.objects.get(Profile_id=ab)
+                ma = calpipe()
+                ma.Profile_id = mb.Profile_id
+                ma.Name = mb.Name
+                ma.Username = mb.Username
+                ma.Created_at = mb.Created_at
+                ma.Url_section_url = mb.Url_section_url
+                ma.Description_section_url = mb.Description_section_url
+                ma.Location = mb.Location
+                ma.Description = mb.Description
+                ma.Status = mb.Status
+                ma.Status_count = mb.Status_count
+                ma.Friends_count = mb.Friends_count
+                ma.Followers_count = mb.Followers_count
+                ma.Favourites_count = mb.Favourites_count
+                ma.Blocked_by = mb.Blocked_by
+                ma.Blocking = mb.Blocking
+                ma.Contributors_enabled = mb.Contributors_enabled
+                ma.Default_profile = mb.Default_profile
+                ma.Default_profile_image = mb.Default_profile_image
+                ma.Follow_request_sent = mb.Follow_request_sent
+                ma.Following = mb.Following
+                ma.Geo_enabled = mb.Geo_enabled
+                ma.Has_extended_profile = mb.Has_extended_profile
+                ma.Profile_id_str = mb.Profile_id_str
+                ma.Is_translation_enabled = mb.Is_translation_enabled
+                ma.Is_translator = mb.Is_translator
+                ma.Listed_count = mb.Listed_count
+                ma.Live_following = mb.Live_following
+                ma.Muting = mb.Muting
+                ma.Notification = mb.Notification
+                ma.Profile_background_color = mb.Profile_background_color
+                ma.Profile_background_image_url = mb.Profile_background_image_url
+                ma.Profile_background_image_url_https = mb.Profile_background_image_url_https
+                ma.Profile_background_title = mb.Profile_background_title
+                ma.Profile_image_url = mb.Profile_image_url
+                ma.Profile_image_url_https = mb.Profile_image_url_https
+                ma.Profile_link_color = mb.Profile_link_color
+                ma.Profile_slidebar_border_color = mb.Profile_slidebar_border_color
+                ma.Profile_slidebar_fill_color = mb.Profile_slidebar_fill_color
+                ma.Profile_text_color = mb.Profile_text_color
+                ma.Profile_use_background_image = mb.Profile_use_background_image
+                ma.Protected = mb.Protected
+                ma.Traslator_type = mb.Traslator_type
+                ma.Verified = mb.Verified
+                ma.save()
+    return render(request, 'fol.html')
 
 def csvs(request):
-    ma = calpipelead.objects.all()
+    ma = calpipe.objects.all()
     response = HttpResponse('text/csv')
     response['Content-Disposition'] = 'attachment; filename=F.csv'
     writer = csv.writer(response)
